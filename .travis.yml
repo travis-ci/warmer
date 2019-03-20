@@ -1,4 +1,5 @@
 language: ruby
+ruby: 2.5
 dist: xenial
 group: edge
 services:
@@ -12,3 +13,12 @@ before_install:
 - source example.env
 script:
 - bundle exec rake
+- bundle exec rake docker:build
+deploy:
+  provider: script
+  script: rvm 2.5 --fuzzy do bundle exec rake docker:deploy
+  skip_cleanup: true
+  on:
+    # push all non-PR builds to Docker Hub
+    all_branches: true
+    condition: "$TRAVIS_PULL_REQUEST == false"
